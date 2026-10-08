@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>คำนวณเงินไทยช่วยไทย พลัส 60/40 (ฉบับกาแล็คซี่คิ้วท์)</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Sarabun', 'ChulaCharasNew', Arial, sans-serif;
+            background: radial-gradient(circle at top, #1a1c4b 0%, #0d0e26 100%);
+            margin: 0;
+            padding: 0;
+            color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 460px;
+            background: rgba(25, 28, 67, 0.85);
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(74, 144, 226, 0.3);
+            overflow: hidden;
+            margin: 20px;
+            border: 3px solid #4a90e2;
+            backdrop-filter: blur(10px);
+        }
+        .header {
+            background: linear-gradient(135deg, #2b3075, #1a1c4b);
+            color: #ffffff;
+            padding: 35px 20px 25px 20px;
+            text-align: center;
+            position: relative;
+            border-bottom: 3px dashed #4a90e2;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(74, 144, 226, 0.8);
+        }
+        .header p {
+            margin: 8px 0 0 0;
+            font-size: 15px;
+            background: rgba(74, 144, 226, 0.3);
+            display: inline-block;
+            padding: 4px 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            color: #90caf9;
+            border: 1px solid rgba(74, 144, 226, 0.5);
+        }
+        .badge {
+            display: inline-block;
+            background: #ff79c6;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 12px;
+            box-shadow: 0 3px 10px rgba(255, 121, 198, 0.5);
+        }
+        .content {
+            padding: 30px 25px;
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #90caf9;
+            font-size: 16px;
+            text-align: center;
+            text-shadow: 0 0 5px rgba(144, 202, 249, 0.3);
+        }
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            padding-right: 60px;
+            border: 3px solid #4a90e2;
+            border-radius: 20px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            outline: none;
+            text-align: center;
+            background-color: #0d0e26;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        input[type="number"]:focus {
+            border-color: #ff79c6;
+            box-shadow: 0 0 15px rgba(255, 121, 198, 0.4);
+        }
+        .currency-label {
+            position: absolute;
+            right: 20px;
+            font-weight: bold;
+            color: #90caf9;
+            font-size: 16px;
+        }
+        .quick-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .quick-btn {
+            background: #1a1c4b;
+            border: 2px solid #4a90e2;
+            padding: 10px 5px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #90caf9;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .quick-btn:hover {
+            background: linear-gradient(135deg, #4a90e2, #ff79c6);
+            color: white;
+            border-color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(74, 144, 226, 0.4);
+        }
+        .quick-btn:active {
+            transform: translateY(0);
+        }
+        .results-card {
+            background: rgba(13, 14, 38, 0.8);
+            border-radius: 22px;
+            padding: 22px;
+            margin-top: 25px;
+            border: 2px solid #2b3075;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 2px dashed #2b3075;
+        }
+        .result-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-top: 8px;
+        }
+        .result-row:first-child {
+            padding-top: 0;
+        }
+        .result-label {
+            font-size: 16px;
+            color: #90caf9;
+            font-weight: bold;
+        }
+        
+        .result-value {
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .value-gov { color: #50fa7b; text-shadow: 0 0 10px rgba(80, 250, 123, 0.5); }
+        .value-user { color: #ff79c6; text-shadow: 0 0 10px rgba(255, 121, 198, 0.5); }
+        .value-total { color: #8be9fd; text-shadow: 0 0 10px rgba(139, 233, 253, 0.5); }
+
+        .total-box {
+            background: #1a1c4b; 
+            margin: 15px -22px -22px -22px; 
+            padding: 18px 22px; 
+            border-radius: 0 0 19px 19px;
+            border-top: 2px solid #4a90e2;
+        }
+
+        .note {
+            font-size: 13px;
+            color: #a69bb0;
+            margin-top: 20px;
+            text-align: center;
+            line-height: 1.5;
+            background: rgba(13, 14, 38, 0.5);
+            padding: 12px;
+            border-radius: 15px;
+            border: 1px solid #2b3075;
+        }
+        
+        .star-decorations {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .star-sparkle {
+            animation: blink 1.5s infinite ease-in-out;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🌌 ไทยช่วยไทย พลัส 🌌</h1>
+        <p>สัดส่วนดวงดาว 60 / 40</p>
+        <br>
+        <div class="badge">✨ คำนวณระบบกาแล็คซี่สุดคิ้วท์ ✨</div>
+    </div>
+    
+    <div class="content">
+        <div class="star-decorations">
+            <span class="star-sparkle" style="color: #8be9fd; animation-delay: 0s;">⭐</span>
+            <span class="star-sparkle" style="color: #ff79c6; animation-delay: 0.3s;">✨</span>
+            <span class="star-sparkle" style="color: #50fa7b; animation-delay: 0.6s;">⭐</span>
+            <span class="star-sparkle" style="color: #f1fa8c; animation-delay: 0.9s;">✨</span>
+        </div>
+
+        <div class="form-group">
+            <label for="priceInput">💫 ป้อนราคาสินค้าในห้วงอวกาศ 💫</label>
+            <div class="input-wrapper">
+                <input type="number" id="priceInput" placeholder="0" min="0" step="any" oninput="calculateAmount()">
+                <span class="currency-label">บาท</span>
+            </div>
+            
+            <div class="quick-buttons">
+                <button class="quick-btn" onclick="setPrice(20)">20 ฿</button>
+                <button class="quick-btn" onclick="setPrice(50)">50 ฿</button>
+                <button class="quick-btn" onclick="setPrice(100)">100 ฿</button>
+                <button class="quick-btn" onclick="setPrice(150)">150 ฿</button>
+                <button class="quick-btn" onclick="setPrice(250)">250 ฿</button>
+                <button class="quick-btn" onclick="setPrice(300)">300 ฿</button>
+                <button class="quick-btn" onclick="setPrice(333)">333 ฿</button>
+                <button class="quick-btn" onclick="setPrice(500)">500 ฿</button>
+            </div>
+        </div>
+
+        <div class="results-card">
+            <div class="result-row">
+                <div class="result-label">🪐 รัฐช่วยยานแม่จ่าย (60%)</div>
+                <div class="result-value value-gov" id="govPay">0.00 <span style="font-size:14px; font-weight:normal; color:#a69bb0;">บาท</span></div>
+            </div>
+            <div class="result-row">
+                <div class="result-label">🚀 เราจ่ายเองชิลๆ (40%)</div>
+                <div class="result-value value-user" id="userPay">0.00 <span style="font-size:14px; font-weight:normal; color:#a69bb0;">บาท</span></div>
+            </div>
+            <div class="result-row total-box">
+                <div class="result-label" style="color: #8be9fd;">🌠 ยอดรวมดวงดาวทั้งหมด</div>
+                <div class="result-value value-total" id="totalPrice">0.00 <span style="font-size:14px; font-weight:normal; color:#a69bb0;">บาท</span></div>
+            </div>
+        </div>
+
+        <div class="note">
+            🔮 <b>บันทึกจากดวงดาว:</b> รัฐช่วยจ่าย 60% ไม่เกิน 200 บาทนะค๊า หากยอดเกิน 333 บาท ส่วนที่เหลือเราเปย์เองทั้งหมดเลยจ้า
+        </div>
+    </div>
+</div>
+
+<script>
+function setPrice(value) {
+    document.getElementById('priceInput').value = value;
+    calculateAmount();
+}
+
+function calculateAmount() {
+    let price = parseFloat(document.getElementById('priceInput').value);
+    
+    if (isNaN(price) || price <= 0) {
+        document.getElementById('govPay').innerHTML = '0.00 <span style="font-size:14px; font-weight:normal;">บาท</span>';
+        document.getElementById('userPay').innerHTML = '0.00 <span style="font-size:14px; font-weight:normal;">บาท</span>';
+        document.getElementById('totalPrice').innerHTML = '0.00 <span style="font-size:14px; font-weight:normal;">บาท</span>';
+        return;
+    }
+
+    let govShare = price * 0.60;
+    let userShare = 0;
+
+    // รัฐจ่ายสูงสุด 200 บาท
+    if (govShare > 200) {
+        govShare = 200;
+        userShare = price - 200;
+    } else {
+        userShare = price * 0.40;
+    }
+
+    // ปรับเศษตามตารางภาพสำหรับยอด 333 บาท
+    if (Math.round(price) === 333) {
+        govShare = 200;
+        userShare = 133;
+    }
+
+    document.getElementById('govPay').innerHTML = govShare.toLocaleString('th-TH', {minimumFractionDigits: 0, maximumFractionDigits: 2}) + ' <span style="font-size:14px; font-weight:normal;">บาท</span>';
+    document.getElementById('userPay').innerHTML = userShare.toLocaleString('th-TH', {minimumFractionDigits: 0, maximumFractionDigits: 2}) + ' <span style="font-size:14px; font-weight:normal;">บาท</span>';
+    document.getElementById('totalPrice').innerHTML = price.toLocaleString('th-TH', {minimumFractionDigits: 0, maximumFractionDigits: 2}) + ' <span style="font-size:14px; font-weight:normal;">บาท</span>';
+}
+</script>
+
+</body>
+</html>
